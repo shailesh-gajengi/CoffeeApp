@@ -11,6 +11,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,6 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.coffeeapp.R
+import com.example.coffeeapp.model.FavouriteProduct
 import com.example.coffeeapp.model.Product
 import com.example.coffeeapp.navigation.Routes
 import com.example.coffeeapp.ui.theme.IvoryWhite
@@ -36,8 +41,14 @@ fun ProductCard(navController: NavController,
                 modifier: Modifier = Modifier,
                 cartViewModel: CartViewModel,
                 favouriteViewModel: FavouriteViewModel,
+                favourites: List<FavouriteProduct>,
                 context: Context,
 ) {
+    val favourite = favourites.firstOrNull {
+        it.coffeeId == product.id.toLong()
+    }
+
+    val isFavourite = favourite != null
     Card(
         // 1. Remove .width(250.dp). Let the Grid's .weight(1f) handle the width.
         // 2. Padding is applied here to give the shadow room to breathe.
@@ -81,16 +92,28 @@ fun ProductCard(navController: NavController,
                     Icon(
                         painter = painterResource(R.drawable.regular_outline_heart),
                         contentDescription = "Favourite",
-                        tint = LightBrown,
+                        tint = if (isFavourite) Color.Red else LightBrown,
                         modifier = Modifier
                             .size(30.dp)
                             .clickable {
 
-                                favouriteViewModel.addFavourite(
-                                    userId = 1,
-                                    coffeeId = product.id.toLong(),
-                                    context = context
-                                )
+                                if (isFavourite) {
+
+                                    favouriteViewModel.removeFavourite(
+                                        id = favourite!!.id,
+                                        userId = 1,
+                                        context = context
+                                    )
+
+                                } else {
+
+                                    favouriteViewModel.addFavourite(
+                                        userId = 1,
+                                        coffeeId = product.id.toLong(),
+                                        context = context
+                                    )
+
+                                }
 
                             }
                     )

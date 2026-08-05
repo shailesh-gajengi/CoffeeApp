@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.coffeeapp.model.FavouriteProduct
 import com.example.coffeeapp.model.Product
 import com.example.coffeeapp.viewmodel.CartViewModel
 import com.example.coffeeapp.viewmodel.FavouriteViewModel
@@ -22,13 +23,14 @@ fun ProductGrid(
     navController: NavController,
     modifier: Modifier,
     favouriteViewModel: FavouriteViewModel,
+    favourites: List<FavouriteProduct>,
     context: Context,
     products: List<Product>,
     cartViewModel: CartViewModel,
     topContent: @Composable () -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(8.dp)
+        modifier = modifier.fillMaxSize().padding(8.dp)
     ) {
         item(){
             topContent()
@@ -41,8 +43,10 @@ fun ProductGrid(
                     navController = navController,
                     product = rowtems[0],
                     cartViewModel = cartViewModel,
+
                     modifier = Modifier.weight(1f),
                     favouriteViewModel = favouriteViewModel,
+                    favourites = favourites,
                     context = context
                 )
                 if(rowtems.size==2){
@@ -52,6 +56,7 @@ fun ProductGrid(
                         cartViewModel = cartViewModel,
                         modifier = Modifier.weight(1f),
                         favouriteViewModel = favouriteViewModel,
+                        favourites = favourites,
                         context = context
                     )
                 }else{

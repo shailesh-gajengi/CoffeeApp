@@ -44,11 +44,16 @@ fun HomeScreen(navController: NavController) {
     val cartViewModel: CartViewModel = viewModel()
     val favouriteViewModel: FavouriteViewModel = viewModel()
     val products by coffeeViewModel.coffeeList.collectAsState()
-
+    val favourites by favouriteViewModel.favourites.collectAsState()
     LaunchedEffect(Unit) {
         coffeeViewModel.getAllCoffee(context)
     }
-
+    LaunchedEffect(Unit) {
+        favouriteViewModel.getFavourite(
+            userId = 1,
+            context = context
+        )
+    }
     Scaffold(
         bottomBar = { MyNavBar(navController,"Home") }
     ) { innerPadding ->
@@ -80,9 +85,11 @@ fun HomeScreen(navController: NavController) {
                 modifier = Modifier.padding(innerPadding),
 
                 favouriteViewModel = favouriteViewModel,
+                favourites = favourites,
                 context = context,
                 products = products,
                 cartViewModel = cartViewModel,
+
                 topContent = {
                     // This Column stays inside the Lazy list so it scrolls up with the products
                     Column(

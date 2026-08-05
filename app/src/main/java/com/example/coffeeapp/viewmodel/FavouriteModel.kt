@@ -42,7 +42,14 @@ class FavouriteViewModel : ViewModel() {
                 )
 
                 if (response.isSuccessful) {
-                    getFavourite(userId, context)
+
+                    response.body()?.let {
+
+                        _favourites.value =
+                            _favourites.value + it.toFavouriteProduct(context)
+
+                    }
+
                 }
 
             } catch (e: Exception) {
@@ -84,19 +91,18 @@ class FavouriteViewModel : ViewModel() {
         userId: Long,
         context: Context
     ) {
-
         viewModelScope.launch {
 
+            // Update UI immediately
+            _favourites.value = _favourites.value.filter { it.id != id }
+
             try {
-
                 repository.removeFavourite(id)
-
-                getFavourite(userId, context)
-
             } catch (e: Exception) {
                 e.printStackTrace()
+                // Optional: reload if request fails
+                getFavourite(userId, context)
             }
-
         }
     }
 }
