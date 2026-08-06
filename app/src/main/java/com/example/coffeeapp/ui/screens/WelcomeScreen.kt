@@ -63,15 +63,43 @@ fun WelcomeScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = {navController.navigate(Routes.HomeScreen)},
-                modifier = Modifier.fillMaxWidth().height(50.dp),
+                onClick = {
+                    navController.navigate(Routes.LoginScreen)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = LightBrown,
-                    contentColor = Color.Black
+                    containerColor = LightBrown
                 ),
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Text(text = "Get Started", fontSize = 18.sp, color = Color.White)
+                Text(
+                    text = "Login",
+                    fontSize = 18.sp,
+                    color = Color.White
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Button(
+                onClick = {
+                    navController.navigate(Routes.RegisterScreen)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.DarkGray
+                ),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Text(
+                    text = "Register",
+                    fontSize = 18.sp,
+                    color = Color.White
+                )
             }
 
             }

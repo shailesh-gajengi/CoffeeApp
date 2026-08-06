@@ -51,13 +51,14 @@ import com.example.coffeeapp.ui.components.MyNavBar
 import com.example.coffeeapp.ui.components.PaymentCard
 import com.example.coffeeapp.ui.theme.LightBrown
 import com.example.coffeeapp.viewmodel.CartViewModel
+import com.example.coffeeapp.viewmodel.OrderViewModel
 
 @Composable
  fun CartScreen(navController: NavController) {
     val context = LocalContext.current
 
     val cartViewModel: CartViewModel = viewModel()
-
+    val orderViewModel: OrderViewModel = viewModel()
     val cartItems by cartViewModel.cartItems.collectAsState()
     var deliveryFee by remember { mutableStateOf(0.0) }
     val amount = cartItems.sumOf {
@@ -137,7 +138,37 @@ import com.example.coffeeapp.viewmodel.CartViewModel
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                PaymentCard(total, deliveryFee)
+                PaymentCard(
+                    total = total,
+                    deliveryFee = deliveryFee
+                ) { paymentMethod ->
+
+                    val request = com.example.coffeeapp.dto.OrderRequest(
+                        userId = 1,
+                        paymentMethod = paymentMethod,
+                        items = cartItems.map {
+                            com.example.coffeeapp.dto.OrderItemRequest(
+                                coffeeId = it.coffeeId,
+                                quantity = it.quantity
+                            )
+                        }
+                    )
+
+                    orderViewModel.placeOrder(request)
+
+// Clear cart after placing order
+                    cartItems.forEach {
+
+                        cartViewModel.removeFromCart(
+                            id = it.id,
+                            context = context
+                        )
+
+                    }
+
+// Navigate to My Orders
+                    navController.navigate(Routes.OrderScreen)
+                }
 
             }
 

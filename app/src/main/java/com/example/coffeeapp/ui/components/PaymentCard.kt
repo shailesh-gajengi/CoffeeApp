@@ -37,7 +37,11 @@ import com.example.coffeeapp.R
 import com.example.coffeeapp.ui.theme.LightBrown
 
 @Composable
-fun PaymentCard(total: Double, deliveryFee: Double) {
+fun PaymentCard(
+    total: Double,
+    deliveryFee: Double,
+    onPlaceOrder: (String) -> Unit
+) {
     // 1. These states MUST be inside the component
     var expanded by remember { mutableStateOf(false) }
     var SelectedMode by remember { mutableStateOf("Online") }
@@ -118,7 +122,7 @@ fun PaymentCard(total: Double, deliveryFee: Double) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { /* Order logic */ },
+                onClick = { onPlaceOrder(SelectedMode) },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = LightBrown),
                 shape = RoundedCornerShape(16.dp)
