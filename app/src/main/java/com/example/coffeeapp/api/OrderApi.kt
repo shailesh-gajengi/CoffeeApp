@@ -14,7 +14,7 @@ interface OrderApi {
 
     @GET("orders/user/{userId}")
     suspend fun getOrders(
-        @Path("userId") userId: Long
+        @Path("userId") userId: String
     ): Response<List<OrderResponse>>
 
     @GET("orders/{id}")

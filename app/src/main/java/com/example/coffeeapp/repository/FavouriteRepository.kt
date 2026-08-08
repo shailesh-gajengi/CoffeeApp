@@ -10,7 +10,7 @@
         suspend fun addFavourite(request: FavouriteRequest) =
             api.addFavourite(request)
 
-        suspend fun getFavourite(userId: Long) =
+        suspend fun getFavourite(userId: String) =
             api.getFavourite(userId)
 
         suspend fun removeFavourite(id: Long) =

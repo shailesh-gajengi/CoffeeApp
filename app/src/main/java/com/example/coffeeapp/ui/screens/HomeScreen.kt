@@ -34,12 +34,13 @@ import com.example.coffeeapp.ui.components.SearchBar
 import com.example.coffeeapp.model.Product
 import com.example.coffeeapp.viewmodel.CartViewModel
 import com.example.coffeeapp.viewmodel.FavouriteViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 
 @Composable
 fun HomeScreen(navController: NavController) {
     val context = LocalContext.current
-
+    val userId = FirebaseAuth.getInstance().currentUser?.uid
     val coffeeViewModel: CoffeeViewModel = viewModel()
     val cartViewModel: CartViewModel = viewModel()
     val favouriteViewModel: FavouriteViewModel = viewModel()
@@ -49,10 +50,12 @@ fun HomeScreen(navController: NavController) {
         coffeeViewModel.getAllCoffee(context)
     }
     LaunchedEffect(Unit) {
-        favouriteViewModel.getFavourite(
-            userId = 1,
-            context = context
-        )
+        userId?.let {
+            favouriteViewModel.getFavourite(
+                userId = it,
+                context = context
+            )
+        }
     }
     Scaffold(
         bottomBar = { MyNavBar(navController,"Home") }

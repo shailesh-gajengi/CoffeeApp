@@ -14,7 +14,7 @@ interface FavouriteApi {
 
     @GET("favourite/user/{userId}")
     suspend fun getFavourite(
-        @Path("userId") userId: Long
+        @Path("userId") userId: String
     ): Response<List<FavouriteResponse>>
 
     @DELETE("favourite/{id}")

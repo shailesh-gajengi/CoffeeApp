@@ -10,7 +10,7 @@ class OrderRepository(
     suspend fun placeOrder(request: OrderRequest) =
         api.placeOrder(request)
 
-    suspend fun getOrders(userId: Long) =
+    suspend fun getOrders(userId: String) =
         api.getOrders(userId)
 
     suspend fun getOrderById(id: Long) =

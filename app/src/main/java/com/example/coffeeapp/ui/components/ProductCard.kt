@@ -11,10 +11,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,87 +30,105 @@ import com.example.coffeeapp.ui.theme.LightBrown
 import com.example.coffeeapp.ui.theme.LightGray
 import com.example.coffeeapp.viewmodel.CartViewModel
 import com.example.coffeeapp.viewmodel.FavouriteViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun ProductCard(navController: NavController,
-                product: Product,
-                modifier: Modifier = Modifier,
-                cartViewModel: CartViewModel,
-                favouriteViewModel: FavouriteViewModel,
-                favourites: List<FavouriteProduct>,
-                context: Context,
+fun ProductCard(
+    navController: NavController,
+    product: Product,
+    modifier: Modifier = Modifier,
+    cartViewModel: CartViewModel,
+    favouriteViewModel: FavouriteViewModel,
+    favourites: List<FavouriteProduct>,
+    context: Context,
 ) {
+
+    val userId = FirebaseAuth.getInstance().currentUser?.uid
+
     val favourite = favourites.firstOrNull {
         it.coffeeId == product.id.toLong()
     }
 
     val isFavourite = favourite != null
+
     Card(
-        // 1. Remove .width(250.dp). Let the Grid's .weight(1f) handle the width.
-        // 2. Padding is applied here to give the shadow room to breathe.
         modifier = modifier
             .fillMaxWidth()
-            .clickable { navController.navigate(Routes.DetailScreen(product.id)) }
+            .clickable {
+                navController.navigate(
+                    Routes.DetailScreen(product.id)
+                )
+            }
             .padding(8.dp),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            // 3. Elevation needs a solid color to be visible.
-            // Semi-transparent colors like .copy(0.3f) hide the shadow.
             containerColor = Color.White
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
         )
     ) {
+
         Column {
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(160.dp) // Reduced height from 250dp for better grid proportions
+                    .height(160.dp)
                     .padding(8.dp)
             ) {
+
                 Image(
                     painter = painterResource(id = product.imageRes),
-                    contentDescription = "com.example.coffeeapp.model.Product Image",
+                    contentDescription = "Coffee Image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(shape = RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(16.dp))
                 )
 
                 Box(
-                    modifier = Modifier.align(Alignment.TopEnd).
-                    background(
-                        color = LightGray.copy(0.8f),
-                        shape = RoundedCornerShape(12.dp)
-                    ).padding(0.dp)
-                ){
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .background(
+                            color = LightGray.copy(0.8f),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                ) {
+
                     Icon(
-                        painter = painterResource(R.drawable.regular_outline_heart),
+                        painter = painterResource(
+                            R.drawable.regular_outline_heart
+                        ),
                         contentDescription = "Favourite",
-                        tint = if (isFavourite) Color.Red else LightBrown,
+                        tint = if (isFavourite) {
+                            Color.Red
+                        } else {
+                            LightBrown
+                        },
                         modifier = Modifier
                             .size(30.dp)
                             .clickable {
 
-                                if (isFavourite) {
+                                userId?.let { uid ->
 
-                                    favouriteViewModel.removeFavourite(
-                                        id = favourite!!.id,
-                                        userId = 1,
-                                        context = context
-                                    )
+                                    if (isFavourite) {
 
-                                } else {
+                                        favouriteViewModel.removeFavourite(
+                                            id = favourite!!.id,
+                                            userId = uid,
+                                            context = context
+                                        )
 
-                                    favouriteViewModel.addFavourite(
-                                        userId = 1,
-                                        coffeeId = product.id.toLong(),
-                                        context = context
-                                    )
+                                    } else {
 
+                                        favouriteViewModel.addFavourite(
+                                            userId = uid,
+                                            coffeeId = product.id.toLong(),
+                                            context = context
+                                        )
+                                    }
                                 }
-
                             }
                     )
                 }
@@ -122,7 +136,6 @@ fun ProductCard(navController: NavController,
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // Name
             Text(
                 modifier = Modifier.padding(horizontal = 12.dp),
                 text = product.name,
@@ -134,12 +147,11 @@ fun ProductCard(navController: NavController,
                 overflow = TextOverflow.Ellipsis
             )
 
-            // Description
             Text(
                 modifier = Modifier.padding(horizontal = 12.dp),
                 text = product.description,
                 style = typography.bodySmall.copy(
-                    color = Color.Gray,
+                    color = Color.Gray
                 ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -147,14 +159,18 @@ fun ProductCard(navController: NavController,
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Price and Add Button Row
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
+                    .padding(
+                        start = 12.dp,
+                        end = 12.dp,
+                        bottom = 12.dp
+                    ),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
                 Text(
                     text = "$ ${product.price}",
                     style = typography.titleMedium.copy(
@@ -166,20 +182,23 @@ fun ProductCard(navController: NavController,
                 IconButton(
                     onClick = {
 
-                        cartViewModel.addToCart(
-                            userId = 1,
-                            coffeeId = product.id.toLong(),
-                            quantity = 1
-                        )
+                        userId?.let { uid ->
 
+                            cartViewModel.addToCart(
+                                userId = uid,
+                                coffeeId = product.id.toLong(),
+                                quantity = 1
+                            )
+                        }
                     },
                     modifier = Modifier
-                        .size(36.dp) // Fixed size for the button
+                        .size(36.dp)
                         .background(
                             color = LightBrown,
                             shape = RoundedCornerShape(10.dp)
                         )
                 ) {
+
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Add to Cart",

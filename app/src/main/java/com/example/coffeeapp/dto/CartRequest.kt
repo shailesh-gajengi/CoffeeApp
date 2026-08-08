@@ -1,5 +1,5 @@
 data class CartRequest(
-    val userId: Long,
+    val userId: String,
     val coffeeId: Long,
     val quantity: Int
 )

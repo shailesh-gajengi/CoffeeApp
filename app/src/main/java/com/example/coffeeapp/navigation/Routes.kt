@@ -13,7 +13,8 @@
         object RegisterScreen : Routes()
         @Serializable
         object HomeScreen : Routes()
-
+        @Serializable
+        object OrdersScreen : Routes()
         @Serializable
         object OrderScreen : Routes()
         @Serializable

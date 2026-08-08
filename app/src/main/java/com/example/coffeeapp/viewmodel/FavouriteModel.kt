@@ -28,7 +28,7 @@ class FavouriteViewModel : ViewModel() {
         get() = _favourites
 
     fun addFavourite(
-        userId: Long,
+        userId: String,
         coffeeId: Long,
         context: Context
     ) {
@@ -60,7 +60,7 @@ class FavouriteViewModel : ViewModel() {
     }
 
     fun getFavourite(
-        userId: Long,
+        userId: String,
         context: Context
     ) {
 
@@ -88,7 +88,7 @@ class FavouriteViewModel : ViewModel() {
 
     fun removeFavourite(
         id: Long,
-        userId: Long,
+        userId: String,
         context: Context
     ) {
         viewModelScope.launch {

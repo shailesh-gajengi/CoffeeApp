@@ -18,6 +18,8 @@ fun CartResponse.toCartProduct(context: Context): CartProduct {
         name = coffeeName,
         price = price,
         imageRes = if (res != 0) res else com.example.coffeeapp.R.drawable.default_bean,
-        quantity = quantity
+        quantity = quantity,
+        userId = userId
     )
+
 }

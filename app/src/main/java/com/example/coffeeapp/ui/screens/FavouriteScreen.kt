@@ -18,26 +18,42 @@ import com.example.coffeeapp.ui.components.FavouriteItemCart
 import com.example.coffeeapp.ui.components.FavouriteScreenTopBar
 import com.example.coffeeapp.ui.components.MyNavBar
 import com.example.coffeeapp.viewmodel.FavouriteViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun FavouriteScreen(navController: NavController) {
 
     val context = LocalContext.current
 
+    val userId = FirebaseAuth
+        .getInstance()
+        .currentUser
+        ?.uid
+
     val favouriteViewModel: FavouriteViewModel = viewModel()
 
     val favourites by favouriteViewModel.favourites.collectAsState()
 
-    LaunchedEffect(Unit) {
-        favouriteViewModel.getFavourite(
-            userId = 1,
-            context = context
-        )
+    LaunchedEffect(userId) {
+
+        userId?.let {
+            favouriteViewModel.getFavourite(
+                userId = it,
+                context = context
+            )
+        }
     }
 
     Scaffold(
-        topBar = { FavouriteScreenTopBar() },
-        bottomBar = { MyNavBar(navController, "Favourite") }
+        topBar = {
+            FavouriteScreenTopBar()
+        },
+        bottomBar = {
+            MyNavBar(
+                navController,
+                "Favourite"
+            )
+        }
     ) { innerPadding ->
 
         LazyColumn(
@@ -54,10 +70,7 @@ fun FavouriteScreen(navController: NavController) {
                     favouriteViewModel = favouriteViewModel,
                     context = context
                 )
-
             }
-
         }
-
     }
 }

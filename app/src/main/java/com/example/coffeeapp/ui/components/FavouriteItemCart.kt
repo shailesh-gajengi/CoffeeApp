@@ -30,6 +30,7 @@ import com.example.coffeeapp.model.FavouriteProduct
 import com.example.coffeeapp.ui.theme.LightBrown
 import com.example.coffeeapp.ui.theme.LightGray
 import com.example.coffeeapp.viewmodel.FavouriteViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun FavouriteItemCart(
@@ -37,6 +38,8 @@ fun FavouriteItemCart(
     favouriteViewModel: FavouriteViewModel,
     context: Context
 ) {
+
+    val userId = FirebaseAuth.getInstance().currentUser?.uid
 
     Card(
         modifier = Modifier
@@ -55,7 +58,7 @@ fun FavouriteItemCart(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically
         ) {
 
             Image(
@@ -69,7 +72,7 @@ fun FavouriteItemCart(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 12.dp),
+                    .padding(start = 12.dp)
             ) {
 
                 Text(
@@ -85,42 +88,34 @@ fun FavouriteItemCart(
                         color = Color.DarkGray
                     )
                 )
-
             }
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            IconButton(
+                onClick = {
 
-                IconButton(
-                    onClick = {
-
+                    userId?.let {
                         favouriteViewModel.removeFavourite(
                             id = favourite.id,
-                            userId = 1,
+                            userId = it,
                             context = context
                         )
+                    }
 
-                    },
-                    modifier = Modifier
-                        .background(
-                            color = LightBrown.copy(0.2f),
-                            shape = CircleShape
-                        )
-                        .size(24.dp)
-                ) {
-
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Remove",
-                        tint = MaterialTheme.colorScheme.error
+                },
+                modifier = Modifier
+                    .background(
+                        color = LightBrown.copy(0.2f),
+                        shape = CircleShape
                     )
+                    .size(24.dp)
+            ) {
 
-                }
-
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Remove",
+                    tint = MaterialTheme.colorScheme.error
+                )
             }
-
         }
-
     }
 }

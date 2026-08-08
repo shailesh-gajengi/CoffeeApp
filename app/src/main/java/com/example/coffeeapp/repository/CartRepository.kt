@@ -10,7 +10,7 @@ class CartRepository(
     suspend fun addToCart(request: CartRequest) =
         api.addToCart(request)
 
-    suspend fun getCart(userId: Long) =
+    suspend fun getCart(userId: String) =
         api.getCart(userId)
 
     suspend fun updateQuantity(id: Long, quantity: Int) =

@@ -89,14 +89,16 @@ fun CartItem(
                             cartViewModel.updateQuantity(
                                 id = cartProduct.id,
                                 quantity = cartProduct.quantity - 1,
-                                context = context
+                                context = context,
+                                userId = cartProduct.userId
                             )
 
                         } else {
 
                             cartViewModel.removeFromCart(
                                 id = cartProduct.id,
-                                context = context
+                                context = context,
+                                userId = cartProduct.userId
                             )
 
                         }
@@ -131,7 +133,8 @@ fun CartItem(
                         cartViewModel.updateQuantity(
                             id = cartProduct.id,
                             quantity = cartProduct.quantity + 1,
-                            context = context
+                            context = context,
+                            userId = cartProduct.userId
                         )
 
                     },

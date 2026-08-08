@@ -19,6 +19,7 @@ import com.example.coffeeapp.ui.components.MyNavBar
 import com.example.coffeeapp.ui.components.OrderCard
 import com.example.coffeeapp.ui.components.OrderScreenTopBar
 import com.example.coffeeapp.viewmodel.OrderViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun OrderScreen(
@@ -29,8 +30,12 @@ fun OrderScreen(
 
     val orders by orderViewModel.orders.collectAsState()
 
-    LaunchedEffect(Unit) {
-        orderViewModel.getOrders(1)
+    val userId = FirebaseAuth.getInstance().currentUser?.uid
+
+    LaunchedEffect(userId) {
+        userId?.let {
+            orderViewModel.getOrders(it)
+        }
     }
 
     Scaffold(

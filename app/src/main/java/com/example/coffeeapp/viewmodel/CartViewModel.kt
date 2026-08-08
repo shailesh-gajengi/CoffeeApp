@@ -28,7 +28,7 @@ class CartViewModel : ViewModel() {
         get() = _cartItems
 
     fun addToCart(
-        userId: Long,
+        userId: String,
         coffeeId: Long,
         quantity: Int = 1
     ) {
@@ -37,19 +37,22 @@ class CartViewModel : ViewModel() {
 
             try {
 
-                val response = repository.addToCart(
-                    CartRequest(userId, coffeeId, quantity)
+                repository.addToCart(
+                    CartRequest(
+                        userId,
+                        coffeeId,
+                        quantity
+                    )
                 )
 
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
         }
     }
 
     fun getCart(
-        userId: Long,
+        userId: String,
         context: Context
     ) {
 
@@ -63,21 +66,22 @@ class CartViewModel : ViewModel() {
 
                     _cartItems.value =
                         response.body()
-                            ?.map { it.toCartProduct(context) }
+                            ?.map {
+                                it.toCartProduct(context)
+                            }
                             ?: emptyList()
-
                 }
 
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
         }
     }
 
     fun updateQuantity(
         id: Long,
         quantity: Int,
+        userId: String,
         context: Context
     ) {
 
@@ -85,19 +89,25 @@ class CartViewModel : ViewModel() {
 
             try {
 
-                repository.updateQuantity(id, quantity)
+                repository.updateQuantity(
+                    id,
+                    quantity
+                )
 
-                getCart(1, context)
+                getCart(
+                    userId,
+                    context
+                )
 
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
         }
     }
 
     fun removeFromCart(
         id: Long,
+        userId: String,
         context: Context
     ) {
 
@@ -107,12 +117,14 @@ class CartViewModel : ViewModel() {
 
                 repository.removeFromCart(id)
 
-                getCart(1, context)
+                getCart(
+                    userId,
+                    context
+                )
 
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
         }
     }
 }

@@ -26,7 +26,7 @@ interface CoffeeApi {
 
     @GET("cart/user/{userId}")
     suspend fun getCart(
-        @Path("userId") userId: Long
+        @Path("userId") userId: String
     ): Response<List<CartResponse>>
 
 }

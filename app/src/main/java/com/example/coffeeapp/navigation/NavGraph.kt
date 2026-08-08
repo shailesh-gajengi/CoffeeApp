@@ -30,6 +30,9 @@ fun NavGraph()
         composable<Routes.OrderScreen> {
             OrderScreen(navController)
         }
+        composable<Routes.OrdersScreen> {
+            OrderScreen(navController)
+        }
         composable<Routes.HomeScreen> {
             HomeScreen(navController)
         }

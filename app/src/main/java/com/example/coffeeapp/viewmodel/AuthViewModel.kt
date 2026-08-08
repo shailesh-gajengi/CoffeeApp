@@ -9,11 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class AuthViewModel : ViewModel() {
-    private val _loginSuccess = MutableStateFlow(false)
-    val loginSuccess: StateFlow<Boolean> = _loginSuccess
 
-    private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error
     private val repository = AuthRepository()
 
     private val _user =
@@ -22,7 +18,19 @@ class AuthViewModel : ViewModel() {
     val user: StateFlow<FirebaseUser?>
         get() = _user
 
+    private val _loginSuccess = MutableStateFlow(false)
+    val loginSuccess: StateFlow<Boolean> = _loginSuccess
+
+    private val _registerSuccess = MutableStateFlow(false)
+    val registerSuccess: StateFlow<Boolean> = _registerSuccess
+
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error
+
+
+    // REGISTER
     fun register(
+        name: String,
         email: String,
         password: String
     ) {
@@ -31,22 +39,43 @@ class AuthViewModel : ViewModel() {
 
             try {
 
+                _registerSuccess.value = false
+                _error.value = null
+
                 repository.register(
-                    email,
-                    password
+                    name = name,
+                    email = email,
+                    password = password
                 )
 
-                _user.value =
-                    repository.currentUser()
+                _user.value = repository.currentUser()
+
+                // Only true when Firebase registration succeeded
+                _registerSuccess.value = true
 
             } catch (e: Exception) {
-                e.printStackTrace()
+
+                _registerSuccess.value = false
+
+                _error.value = when {
+                    e.message?.contains("email address is already in use", true) == true ->
+                        "Email is already registered"
+
+                    e.message?.contains("badly formatted", true) == true ->
+                        "Invalid email address"
+
+                    e.message?.contains("password", true) == true ->
+                        "Password must be at least 6 characters"
+
+                    else ->
+                        "Registration failed. Please try again."
+                }
             }
-
         }
-
     }
 
+
+    // LOGIN
     fun login(
         email: String,
         password: String
@@ -59,6 +88,7 @@ class AuthViewModel : ViewModel() {
                 repository.login(email, password)
 
                 _user.value = repository.currentUser()
+
                 _loginSuccess.value = true
                 _error.value = null
 
@@ -66,18 +96,18 @@ class AuthViewModel : ViewModel() {
 
                 _loginSuccess.value = false
                 _error.value = e.message
-
             }
-
         }
-
     }
 
+
+    // LOGOUT
     fun logout() {
 
         repository.logout()
 
         _user.value = null
-
+        _loginSuccess.value = false
+        _registerSuccess.value = false
     }
 }
