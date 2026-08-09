@@ -14,18 +14,33 @@ import com.example.coffeeapp.ui.screens.LoginScreen
 import com.example.coffeeapp.ui.screens.OrderScreen
 import com.example.coffeeapp.ui.screens.ProfileScreen
 import com.example.coffeeapp.ui.screens.RegisterScreen
+import com.example.coffeeapp.ui.screens.SettingsScreen
 import com.example.coffeeapp.ui.screens.WelcomeScreen
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun NavGraph()
 {
     val navController = rememberNavController()
+    val startDestination = if (
+        FirebaseAuth.getInstance().currentUser != null
+    ) {
+        Routes.HomeScreen
+    } else {
+        Routes.WelcomeScreen
+    }
+
     NavHost(
         navController = navController,
-        startDestination = Routes.WelcomeScreen
-    ){
+        startDestination = startDestination
+    ) {
+        // your existing routes
+
         composable<Routes.WelcomeScreen> {
             WelcomeScreen(navController)
+        }
+        composable<Routes.SettingsScreen> {
+            SettingsScreen(navController)
         }
         composable<Routes.OrderScreen> {
             OrderScreen(navController)

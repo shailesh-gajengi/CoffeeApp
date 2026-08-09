@@ -185,7 +185,7 @@ fun ProfileScreen(navController: NavController) {
                     icon = Icons.Default.Settings,
                     title = "Settings"
                 ) {
-                    // Add settings later
+                    navController.navigate(Routes.SettingsScreen)
                 }
 
 

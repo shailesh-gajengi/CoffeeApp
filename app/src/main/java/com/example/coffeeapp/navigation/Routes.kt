@@ -12,6 +12,8 @@
         @Serializable
         object RegisterScreen : Routes()
         @Serializable
+        object SettingsScreen : Routes()
+        @Serializable
         object HomeScreen : Routes()
         @Serializable
         object OrdersScreen : Routes()
