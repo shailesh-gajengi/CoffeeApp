@@ -8,7 +8,10 @@
         object WelcomeScreen : Routes()
         @Serializable
         object LoginScreen : Routes()
-
+        @Serializable
+        object ChatScreen : Routes()
+        @Serializable
+        object SplashScreen : Routes()
         @Serializable
         object RegisterScreen : Routes()
         @Serializable

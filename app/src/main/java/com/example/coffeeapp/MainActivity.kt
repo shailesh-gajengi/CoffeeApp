@@ -4,20 +4,24 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.coffeeapp.navigation.NavGraph
-import com.example.coffeeapp.ui.screens.DetailScreen
-import com.example.coffeeapp.ui.screens.FavouriteScreen
 import com.example.coffeeapp.ui.theme.CoffeeAppTheme
 
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            CoffeeAppTheme {
 
-                   NavGraph()
-    }
-}
+    override fun onCreate(savedInstanceState: Bundle?) {
+
+        installSplashScreen()
+
+        super.onCreate(savedInstanceState)
+
+        enableEdgeToEdge()
+
+        setContent {
+            CoffeeAppTheme() {
+                NavGraph()
+            }
+        }
     }
 }

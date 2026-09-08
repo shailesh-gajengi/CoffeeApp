@@ -22,6 +22,7 @@ fun CoffeeResponse.toProduct(context: Context): Product {
         name = name,
         description = description,
         price = price,
-        imageRes = imageRes
+        imageRes = imageRes,
+        category = category
     )
 }

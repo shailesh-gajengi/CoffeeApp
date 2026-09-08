@@ -5,7 +5,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -13,6 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.coffeeapp.viewmodel.CoffeeViewModel
@@ -32,6 +38,7 @@ import com.example.coffeeapp.ui.components.ProductGrid
 import com.example.coffeeapp.R
 import com.example.coffeeapp.ui.components.SearchBar
 import com.example.coffeeapp.model.Product
+import com.example.coffeeapp.navigation.Routes
 import com.example.coffeeapp.viewmodel.CartViewModel
 import com.example.coffeeapp.viewmodel.FavouriteViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -45,6 +52,36 @@ fun HomeScreen(navController: NavController) {
     val cartViewModel: CartViewModel = viewModel()
     val favouriteViewModel: FavouriteViewModel = viewModel()
     val products by coffeeViewModel.coffeeList.collectAsState()
+    var selectedCategory by remember {
+        mutableStateOf("All Coffees")
+    }
+    var searchQuery by remember {
+        mutableStateOf("")
+    }
+    val filteredProducts = products.filter { product ->
+
+        val matchesCategory =
+            selectedCategory == "All Coffees" ||
+                    product.category.equals(
+                        selectedCategory,
+                        ignoreCase = true
+                    )
+
+        val matchesSearch =
+            searchQuery.isBlank() ||
+                    product.name.contains(
+                        searchQuery,
+                        ignoreCase = true
+                    ) ||
+                    product.description.contains(
+                        searchQuery,
+                        ignoreCase = true
+                    )
+
+        matchesCategory && matchesSearch
+    }
+
+
     val favourites by favouriteViewModel.favourites.collectAsState()
     LaunchedEffect(Unit) {
         coffeeViewModel.getAllCoffee(context)
@@ -58,7 +95,21 @@ fun HomeScreen(navController: NavController) {
         }
     }
     Scaffold(
-        bottomBar = { MyNavBar(navController,"Home") }
+        bottomBar = { MyNavBar(navController,"Home") },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    navController.navigate(Routes.ChatScreen)
+                },
+                containerColor = Color(0xFF6F4E37)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Chat,
+                    contentDescription = "AI Chat",
+                    tint = Color.White
+                )
+            }
+        }
     ) { innerPadding ->
         // This Box allows us to layer the black background BEHIND the scrolling list
         Box(
@@ -90,7 +141,7 @@ fun HomeScreen(navController: NavController) {
                 favouriteViewModel = favouriteViewModel,
                 favourites = favourites,
                 context = context,
-                products = products,
+                products = filteredProducts,
                 cartViewModel = cartViewModel,
 
                 topContent = {
@@ -114,7 +165,12 @@ fun HomeScreen(navController: NavController) {
 
                         Spacer(Modifier.height(16.dp))
 
-                        SearchBar()
+                        SearchBar(
+                            query = searchQuery,
+                            onQueryChange = {
+                                searchQuery = it
+                            }
+                        )
 
                         Spacer(Modifier.height(24.dp))
 
@@ -131,7 +187,12 @@ fun HomeScreen(navController: NavController) {
 
                         Spacer(Modifier.height(20.dp))
 
-                        HomeCategories()
+                        HomeCategories(
+                            selectedCategory = selectedCategory,
+                            onCategorySelected = {
+                                selectedCategory = it
+                            }
+                        )
 
                     }
                 }

@@ -158,7 +158,7 @@ fun ProfileScreen(navController: NavController) {
                     icon = Icons.Default.ShoppingCart,
                     title = "My Orders"
                 ) {
-                    navController.navigate(Routes.OrdersScreen)
+                    navController.navigate(Routes.OrderScreen)
                 }
 
 
