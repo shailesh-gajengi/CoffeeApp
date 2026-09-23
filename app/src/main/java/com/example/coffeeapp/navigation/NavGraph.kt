@@ -1,6 +1,10 @@
 package com.example.coffeeapp.navigation
 
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -18,125 +22,78 @@ import com.example.coffeeapp.ui.screens.SettingsScreen
 import com.example.coffeeapp.ui.screens.SplashScreen
 import com.example.coffeeapp.ui.screens.WelcomeScreen
 
-@Composable
-fun NavGraph() {
 
-    val navController = rememberNavController()
 
-    NavHost(
-        navController = navController,
-        startDestination = Routes.SplashScreen
-    ) {
+    @Composable
+    fun NavGraph() {
 
-        // ---------------------------------------------------------
-        // SPLASH
-        // ---------------------------------------------------------
+        val navController = rememberNavController()
 
-        composable<Routes.SplashScreen> {
-            SplashScreen(navController)
-        }
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            NavHost(
+                navController = navController,
+                startDestination = Routes.SplashScreen
+            ) {
 
-        // ---------------------------------------------------------
-        // LOGIN
-        // ---------------------------------------------------------
+                composable<Routes.SplashScreen> {
+                    SplashScreen(navController)
+                }
 
-        composable<Routes.LoginScreen> {
-            LoginScreen(navController)
-        }
+                composable<Routes.LoginScreen> {
+                    LoginScreen(navController)
+                }
 
-        // ---------------------------------------------------------
-        // REGISTER
-        // ---------------------------------------------------------
+                composable<Routes.RegisterScreen> {
+                    RegisterScreen(navController)
+                }
 
-        composable<Routes.RegisterScreen> {
-            RegisterScreen(navController)
-        }
+                composable<Routes.WelcomeScreen> {
+                    WelcomeScreen(navController)
+                }
 
-        // ---------------------------------------------------------
-        // WELCOME
-        // ---------------------------------------------------------
+                composable<Routes.HomeScreen> {
+                    HomeScreen(navController)
+                }
 
-        composable<Routes.WelcomeScreen> {
-            WelcomeScreen(navController)
-        }
+                composable<Routes.DetailScreen> { backStackEntry ->
+                    val args = backStackEntry.toRoute<Routes.DetailScreen>()
 
-        // ---------------------------------------------------------
-        // HOME
-        // ---------------------------------------------------------
+                    DetailScreen(
+                        args.productId,
+                        navController
+                    )
+                }
 
-        composable<Routes.HomeScreen> {
-            HomeScreen(navController)
-        }
+                composable<Routes.CartScreen> {
+                    CartScreen(navController)
+                }
 
-        // ---------------------------------------------------------
-        // PRODUCT DETAIL
-        // ---------------------------------------------------------
+                composable<Routes.FavouriteScreen> {
+                    FavouriteScreen(navController)
+                }
 
-        composable<Routes.DetailScreen> { backStackEntry ->
+                composable<Routes.OrderScreen> {
+                    OrderScreen(navController)
+                }
 
-            val args =
-                backStackEntry.toRoute<Routes.DetailScreen>()
+                composable<Routes.OrdersScreen> {
+                    OrderScreen(navController)
+                }
 
-            DetailScreen(
-                args.productId,
-                navController
-            )
-        }
+                composable<Routes.ProfileScreen> {
+                    ProfileScreen(navController)
+                }
 
-        // ---------------------------------------------------------
-        // CART
-        // ---------------------------------------------------------
+                composable<Routes.SettingsScreen> {
+                    SettingsScreen(navController)
+                }
 
-        composable<Routes.CartScreen> {
-            CartScreen(navController)
-        }
-
-        // ---------------------------------------------------------
-        // FAVOURITES
-        // ---------------------------------------------------------
-
-        composable<Routes.FavouriteScreen> {
-            FavouriteScreen(navController)
-        }
-
-        // ---------------------------------------------------------
-        // ORDER
-        // ---------------------------------------------------------
-
-        composable<Routes.OrderScreen> {
-            OrderScreen(navController)
-        }
-
-        // ---------------------------------------------------------
-        // MY ORDERS
-        // ---------------------------------------------------------
-
-        composable<Routes.OrdersScreen> {
-            OrderScreen(navController)
-        }
-
-        // ---------------------------------------------------------
-        // PROFILE
-        // ---------------------------------------------------------
-
-        composable<Routes.ProfileScreen> {
-            ProfileScreen(navController)
-        }
-
-        // ---------------------------------------------------------
-        // SETTINGS
-        // ---------------------------------------------------------
-
-        composable<Routes.SettingsScreen> {
-            SettingsScreen(navController)
-        }
-
-        // ---------------------------------------------------------
-        // AI CHAT
-        // ---------------------------------------------------------
-
-        composable<Routes.ChatScreen> {
-            ChatScreen(navController)
+                composable<Routes.ChatScreen> {
+                    ChatScreen(navController)
+                }
+            }
         }
     }
-}

@@ -25,23 +25,44 @@ class ChatViewModel : ViewModel() {
     private val repository =
         ChatRepository(chatApi)
 
+    // ---------------------------------------------------------
+    // CHAT MESSAGES
+    // ---------------------------------------------------------
+
     private val _messages =
         MutableStateFlow<List<ChatMessage>>(emptyList())
 
     val messages: StateFlow<List<ChatMessage>>
         get() = _messages
 
+    // ---------------------------------------------------------
+    // LOADING STATE
+    // ---------------------------------------------------------
+
+    private val _isLoading =
+        MutableStateFlow(false)
+
+    val isLoading: StateFlow<Boolean>
+        get() = _isLoading
+
+    // ---------------------------------------------------------
+    // SEND MESSAGE
+    // ---------------------------------------------------------
 
     fun sendMessage(
         userId: String,
         message: String
     ) {
 
+        // Add user's message immediately
         _messages.value =
             _messages.value + ChatMessage(
                 message = message,
                 isUser = true
             )
+
+        // Start loading
+        _isLoading.value = true
 
         viewModelScope.launch {
 
@@ -74,13 +95,21 @@ class ChatViewModel : ViewModel() {
                                 isUser = false,
                                 recommendedCoffees = coffees
                             )
+
+                    } else {
+
+                        _messages.value =
+                            _messages.value + ChatMessage(
+                                message = "I couldn't understand the response. Please try again.",
+                                isUser = false
+                            )
                     }
 
                 } else {
 
                     _messages.value =
                         _messages.value + ChatMessage(
-                            message = "Something went wrong.",
+                            message = "Something went wrong. Please try again.",
                             isUser = false
                         )
                 }
@@ -95,10 +124,18 @@ class ChatViewModel : ViewModel() {
                             ?: "Unable to connect to server.",
                         isUser = false
                     )
+
+            } finally {
+
+                // Stop loading ONLY after the complete request finishes
+                _isLoading.value = false
             }
         }
     }
 
+    // ---------------------------------------------------------
+    // GET RECOMMENDED COFFEES
+    // ---------------------------------------------------------
 
     private suspend fun getRecommendedCoffees(
         ids: List<Long>

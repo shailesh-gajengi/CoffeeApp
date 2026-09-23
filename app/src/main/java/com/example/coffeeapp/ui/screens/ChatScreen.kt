@@ -27,6 +27,7 @@ import com.example.coffeeapp.viewmodel.CartViewModel
 import com.example.coffeeapp.viewmodel.ChatViewModel
 import com.example.coffeeapp.viewmodel.FavouriteViewModel
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.delay
 
 private val CoffeeBrown = Color(0xFF6F4E37)
 private val CoffeeDark = Color(0xFF4B2E1F)
@@ -47,6 +48,7 @@ fun ChatScreen(
 
     val favourites by favouriteViewModel.favourites.collectAsState()
     val messages by chatViewModel.messages.collectAsState()
+    val isLoading by chatViewModel.isLoading.collectAsState()
 
     val userId = FirebaseAuth
         .getInstance()
@@ -58,13 +60,49 @@ fun ChatScreen(
         mutableStateOf("")
     }
 
-    var isSending by remember {
-        mutableStateOf(false)
+    // ---------------------------------------------------------
+    // THINKING TEXT
+    // ---------------------------------------------------------
+
+    var thinkingText by remember {
+        mutableStateOf("Thinking...")
     }
+
+    // Change thinking message while backend is processing
+    LaunchedEffect(isLoading) {
+
+        if (isLoading) {
+
+            val texts = listOf(
+                "Thinking...",
+                "Finding the perfect coffee...",
+                "Checking your preferences...",
+                "Preparing your recommendation..."
+            )
+
+            var index = 0
+
+            while (isLoading) {
+
+                thinkingText = texts[index]
+
+                index = (index + 1) % texts.size
+
+                delay(2000)
+            }
+        }
+    }
+
+    // ---------------------------------------------------------
+    // LIST STATE
+    // ---------------------------------------------------------
 
     val listState = rememberLazyListState()
 
-    // Load favourites
+    // ---------------------------------------------------------
+    // LOAD FAVOURITES
+    // ---------------------------------------------------------
+
     LaunchedEffect(Unit) {
 
         if (userId.isNotBlank()) {
@@ -76,28 +114,31 @@ fun ChatScreen(
         }
     }
 
-    // Scroll to latest message
-    LaunchedEffect(messages.size) {
+    // ---------------------------------------------------------
+    // SCROLL TO LATEST MESSAGE
+    // ---------------------------------------------------------
+
+    LaunchedEffect(messages.size, isLoading) {
 
         if (messages.isNotEmpty()) {
 
             listState.animateScrollToItem(
                 messages.lastIndex
             )
-
-            if (isSending) {
-                isSending = false
-            }
         }
     }
+
+    // ---------------------------------------------------------
+    // SCREEN
+    // ---------------------------------------------------------
 
     Scaffold(
 
         containerColor = CoffeeCream,
 
-        // ---------------------------------------------------------
+        // =====================================================
         // TOP BAR
-        // ---------------------------------------------------------
+        // =====================================================
 
         topBar = {
 
@@ -109,7 +150,8 @@ fun ChatScreen(
 
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth().statusBarsPadding()
+                        .fillMaxWidth()
+                        .statusBarsPadding()
                         .padding(
                             horizontal = 8.dp,
                             vertical = 8.dp
@@ -168,9 +210,9 @@ fun ChatScreen(
             }
         },
 
-        // ---------------------------------------------------------
-        // BOTTOM AREA
-        // ---------------------------------------------------------
+        // =====================================================
+        // BOTTOM BAR
+        // =====================================================
 
         bottomBar = {
 
@@ -273,10 +315,8 @@ fun ChatScreen(
                                 if (
                                     message.isNotBlank() &&
                                     userId.isNotBlank() &&
-                                    !isSending
+                                    !isLoading
                                 ) {
-
-                                    isSending = true
 
                                     chatViewModel.sendMessage(
                                         userId = userId,
@@ -286,13 +326,14 @@ fun ChatScreen(
                                     message = ""
                                 }
                             },
+                            enabled = !isLoading,
                             modifier = Modifier
                                 .size(50.dp)
                                 .clip(CircleShape)
                                 .background(
                                     if (
                                         message.isNotBlank() &&
-                                        !isSending
+                                        !isLoading
                                     ) {
                                         CoffeeBrown
                                     } else {
@@ -314,9 +355,9 @@ fun ChatScreen(
 
     ) { paddingValues ->
 
-        // ---------------------------------------------------------
+        // =====================================================
         // CHAT CONTENT
-        // ---------------------------------------------------------
+        // =====================================================
 
         LazyColumn(
             state = listState,
@@ -331,6 +372,10 @@ fun ChatScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
+            // -------------------------------------------------
+            // NORMAL MESSAGES
+            // -------------------------------------------------
+
             items(messages) { msg ->
 
                 ChatBubble(
@@ -338,7 +383,10 @@ fun ChatScreen(
                     isUser = msg.isUser
                 )
 
-                // Recommended coffees
+                // -------------------------------------------------
+                // RECOMMENDED COFFEES
+                // -------------------------------------------------
+
                 if (
                     !msg.isUser &&
                     msg.recommendedCoffees.isNotEmpty()
@@ -368,8 +416,11 @@ fun ChatScreen(
                 }
             }
 
-            // Thinking indicator
-            if (isSending) {
+            // -------------------------------------------------
+            // AI THINKING INDICATOR
+            // -------------------------------------------------
+
+            if (isLoading) {
 
                 item {
 
@@ -377,6 +428,8 @@ fun ChatScreen(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+
+                        // AI ICON
 
                         Box(
                             modifier = Modifier
@@ -397,6 +450,8 @@ fun ChatScreen(
                         Spacer(
                             modifier = Modifier.width(8.dp)
                         )
+
+                        // THINKING BUBBLE
 
                         Surface(
                             color = CoffeeLight,
@@ -419,7 +474,7 @@ fun ChatScreen(
                                 )
 
                                 Text(
-                                    text = "Thinking...",
+                                    text = thinkingText,
                                     color = CoffeeDark
                                 )
                             }
@@ -431,6 +486,10 @@ fun ChatScreen(
     }
 }
 
+
+// =============================================================
+// CHAT BUBBLE
+// =============================================================
 
 @Composable
 private fun ChatBubble(
